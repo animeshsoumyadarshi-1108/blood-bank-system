@@ -1,40 +1,20 @@
 const express = require('express');
 const router = express.Router();
 
-const {
-  addBlood,
-  updateTest,
-  getAvailableBlood,
-  getAllBlood   // 👈 ADD THIS
-} = require('../controllers/bloodController');
+const { addBlood, getAllBlood } = require('../controllers/bloodController');
 
 const authMiddleware = require('../middlewares/authMiddleware');
-const roleMiddleware = require('../middlewares/roleMiddleware');
+const { authorizeRoles } = require('../middlewares/roleMiddleware');
 
-// 🔹 ADD BLOOD (TECHNICIAN)
+// ✅ ADD BLOOD (only ADMIN + TECHNICIAN)
 router.post(
   '/',
   authMiddleware,
-  roleMiddleware('TECHNICIAN'),
+  authorizeRoles("ADMIN", "TECHNICIAN"),
   addBlood
 );
 
-// 🔹 UPDATE TEST RESULT
-router.patch(
-  '/:id/test',
-  authMiddleware,
-  roleMiddleware('TECHNICIAN'),
-  updateTest
-);
-
-// 🔹 GET AVAILABLE BLOOD
-router.get(
-  '/available',
-  authMiddleware,
-  getAvailableBlood
-);
-
-// 🔥 ADD THIS (GET ALL BLOOD)
+// ✅ GET BLOOD (any logged in user)
 router.get(
   '/',
   authMiddleware,
